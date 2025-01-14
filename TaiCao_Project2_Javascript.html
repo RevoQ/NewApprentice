@@ -1,0 +1,18 @@
+/ Create a GlideRecord object for the incident table
+var gr = new GlideRecord('incident');
+
+// Add filters for active incidents with category 'hardware'
+gr.addQuery('active', true);
+gr.addQuery('category', 'hardware');
+gr.setLimit(10); // Limit the results to 10 records
+gr.query(); // Execute the query
+
+// Iterate through the results and output the required fields
+while (gr.next()) {
+    gs.info('Number: ' + gr.getValue('number'));
+    gs.info('Created Date: ' + gr.getValue('sys_created_on'));
+    gs.info('Short Description: ' + gr.getValue('short_description'));
+    gs.info('Category: ' + gr.getValue('category'));
+    gs.info('-------------------------');
+}
+
