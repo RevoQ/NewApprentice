@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Custom Calculator</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 20px;
+    }
+    #calculator {
+      display: inline-block;
+      margin-top: 20px;
+    }
+    #display {
+      width: 100%;
+      height: 50px;
+      text-align: right;
+      font-size: 1.5em;
+      margin-bottom: 10px;
+    }
+    button {
+      width: 60px;
+      height: 60px;
+      margin: 5px;
+      font-size: 1.2em;
+    }
+    #history {
+      margin-top: 20px;
+      text-align: left;
+      max-width: 300px;
+      margin: 20px auto;
+      border: 1px solid #ccc;
+      padding: 10px;
+      background: #f9f9f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>Custom Calculator</h1>
+  <div id="calculator">
+    <input type="text" id="display" readonly>
+    <div>
+      <button onclick="appendNumber('7')">7</button>
+      <button onclick="appendNumber('8')">8</button>
+      <button onclick="appendNumber('9')">9</button>
+      <button onclick="chooseOperator('/')">÷</button>
+    </div>
+    <div>
+      <button onclick="appendNumber('4')">4</button>
+      <button onclick="appendNumber('5')">5</button>
+      <button onclick="appendNumber('6')">6</button>
+      <button onclick="chooseOperator('*')">×</button>
+    </div>
+    <div>
+      <button onclick="appendNumber('1')">1</button>
+      <button onclick="appendNumber('2')">2</button>
+      <button onclick="appendNumber('3')">3</button>
+      <button onclick="chooseOperator('-')">−</button>
+    </div>
+    <div>
+      <button onclick="appendNumber('0')">0</button>
+      <button onclick="appendDecimal()">.</button>
+      <button onclick="calculate()">=</button>
+      <button onclick="chooseOperator('+')">+</button>
+    </div>
+    <div>
+      <button onclick="clearCalculator()">C</button>
+      <button onclick="deleteLast()">DEL</button>
+    </div>
+  </div>
+
+  <div id="history">
+    <h3>Calculation History</h3>
+    <ul id="history-list"></ul>
+  </div>
+
+  <script>
+    // Calculator state object
+    const calculator = {
+      currentNumber: '',
+      previousNumber: '',
+      operator: null,
+      history: [],
+    };
+
+    // Update display
+    function updateDisplay(value) {
+      document.getElementById('display').value = value || '0';
+    }
+
+    // Append number to current input
+    function appendNumber(number) {
+      if (calculator.currentNumber.includes('.') && number === '.') return;
+      calculator.currentNumber += number;
+      updateDisplay(calculator.currentNumber);
+    }
+
+    // Append decimal
+    function appendDecimal() {
+      if (!calculator.currentNumber.includes('.')) {
+        calculator.currentNumber += '.';
+        updateDisplay(calculator.currentNumber);
+      }
+    }
+
+    // Choose operator
+    function chooseOperator(operator) {
+      if (calculator.currentNumber === '') return;
+      if (calculator.previousNumber !== '') calculate();
+      calculator.operator = operator;
+      calculator.previousNumber = calculator.currentNumber;
+      calculator.currentNumber = '';
+    }
+
+    // Perform calculation
+    function calculate() {
+      const prev = parseFloat(calculator.previousNumber);
+      const curr = parseFloat(calculator.currentNumber);
+      if (isNaN(prev) || isNaN(curr)) return;
+
+      let result;
+      switch (calculator.operator) {
+        case '+':
+          result = prev + curr;
+          break;
+        case '-':
+          result = prev - curr;
+          break;
+        case '*':
+          result = prev * curr;
+          break;
+        case '/':
+          if (curr === 0) {
+            alert("Cannot divide by zero");
+            return;
+          }
+          result = prev / curr;
+          break;
+        default:
+          return;
+      }
+
+      calculator.history.push(`${calculator.previousNumber} ${calculator.operator} ${calculator.currentNumber} = ${result}`);
+      updateHistory();
+      calculator.currentNumber = result.toString();
+      calculator.previousNumber = '';
+      calculator.operator = null;
+      updateDisplay(calculator.currentNumber);
+    }
+
+    // Clear calculator
+    function clearCalculator() {
+      calculator.currentNumber = '';
+      calculator.previousNumber = '';
+      calculator.operator = null;
+      updateDisplay('0');
+    }
+
+    // Delete last input
+    function deleteLast() {
+      calculator.currentNumber = calculator.currentNumber.slice(0, -1);
+      updateDisplay(calculator.currentNumber);
+    }
+
+    // Update calculation history
+    function updateHistory() {
+      const historyList = document.getElementById('history-list');
+      historyList.innerHTML = '';
+      calculator.history.forEach((item) => {
+        const li = document.createElement('li');
+        li.textContent = item;
+        historyList.appendChild(li);
+      });
+    }
+
+    // Initialize display
+    updateDisplay();
+  </script>
+</body>
+</html>
+
